@@ -1,0 +1,43 @@
+name: mohsin_s_application4
+description: A new Flutter project.
+version: 1.0.0+1
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  connectivity_plus: ^5.0.2
+  shared_preferences: ^2.2.2
+  cached_network_image: ^3.3.0
+  flutter_svg: ^2.0.9
+  equatable: ^2.0.5
+  google_sign_in: ^5.0.7
+  email_validator: ^2.1.17
+  percent_indicator: ^4.2.3
+  step_progress_indicator: ^1.0.2
+  liquid_progress_indicator_v2: ^0.5.0
+  carousel_slider: ^4.2.1
+  flutter_heatmap_calendar: ^1.0.5
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/RobotoRomanLight.ttf
+          weight: 300
+        - asset: assets/fonts/RobotoRomanRegular.ttf
+          weight: 400
+        - asset: assets/fonts/RobotoRomanBold.ttf
+          weight: 700
+        - asset: assets/fonts/RobotoRomanExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/RobotoRomanExtraBold.ttf
+          weight: 800
