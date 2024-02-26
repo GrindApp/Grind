@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053547026106",
+    "project_id": "app-grind",
+    "storage_bucket": "app-grind.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053547026106:android:0ed6dfc2a71602dd8e5483",
+        "android_client_info": {
+          "package_name": "com.example.grind"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuOsQPVWVAIDEILOxVGohhz4PqVjFEc-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
