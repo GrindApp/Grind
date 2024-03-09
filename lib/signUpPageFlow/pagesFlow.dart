@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_decoration.dart';
-import '../theme/custom_text_style.dart';
 import '../theme/theme_helper.dart';
 import '../widgets/custom_outlined_button.dart';
-import '../widgets/custom_text_form_field.dart';
 import 'SplashScreen2.dart';
 
 enum Gender { MEN, WOMEN }
 
+enum ShowGender { MEN, WOMEN, EVERYONE }
+
 class PagesFlow extends StatefulWidget {
+  late final String verificationId;
+
   @override
   State<PagesFlow> createState() => _PagesFlowState();
 }
@@ -19,7 +20,8 @@ class _PagesFlowState extends State<PagesFlow> {
   late PageController _pageController;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Gender? _selectedGender;
-  Gender? _selectedGender1;
+  ShowGender? _selectedGender1;
+  String verificationId = '';
 
   late DateTime selectedDate;
 
@@ -65,12 +67,13 @@ class _PagesFlowState extends State<PagesFlow> {
     }
   }
 
-  void _navigateBack() {
-    if (_currentPageIndex > 0) {
-      setState(() {
-        _currentPageIndex--;
-      });
-    }
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -95,11 +98,16 @@ class _PagesFlowState extends State<PagesFlow> {
     }
   }
 
-  // void _navigateToNextPage() {
-  //   setState(() {
-  //     _currentPageIndex = (_currentPageIndex + 1) % 7;
-  //   });
-  // }
+  String ShowGenderToString(ShowGender gender) {
+    switch (gender) {
+      case ShowGender.MEN:
+        return 'MEN';
+      case ShowGender.WOMEN:
+        return 'WOMEN';
+      case ShowGender.EVERYONE:
+        return 'EVERYONE';
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -196,416 +204,311 @@ class _PagesFlowState extends State<PagesFlow> {
     );
   }
 
-  Widget _buildUserCred(BuildContext context) {
-    return Center(
-        child: Form(
-            key: _formKey,
-            child: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 36,
-                ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomTextFormField(
+  Widget _buildUserName(BuildContext context) {
+    return Column(
+      children: [
+        Flexible(
+          flex: 6,
+          child: Container(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "What's your first name?",
+                    style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey
+                            .withOpacity(0.1), // Grey with transparency
+                        borderRadius:
+                            BorderRadius.circular(8), // Optional: border radius
+                      ),
+                      child: TextField(
                         cursorColor: Colors.white,
-                        hintText: "NAME",
-                        hintStyle:
-                            TextStyle(fontSize: 18, color: Colors.white54),
-                        validator: (value) {
-                          // if (!isText(value)) {
-                          //   return "err_msg_please_enter_valid_text".tr;
-                          // }
-                          // return null;
-                        },
-                      ),
-                      SizedBox(height: 38),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextFormField(
-                            cursorColor: Colors.white,
-                            hintText: "EMAIL",
-                            textInputType: TextInputType.emailAddress,
-                            validator: (value) {},
-                            hintStyle:
-                                TextStyle(fontSize: 18, color: Colors.white54),
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
-                          SizedBox(
-                              height:
-                                  6), // Adjust spacing between the TextFormField and the text
-                          Text(
-                            "We will send you a mail to verify your email",
-                            style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 10), // Adjust text color as needed
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 44),
-                      CustomTextFormField(
-                        cursorColor: Colors.white,
-                        hintText: "PASSWORD",
-                        hintStyle:
-                            TextStyle(fontSize: 18, color: Colors.white54),
-                        textInputType: TextInputType.visiblePassword,
-                        validator: (value) {},
-                        obscureText: true,
-                      ),
-                      SizedBox(height: 38),
-                      CustomTextFormField(
-                        cursorColor: Colors.white,
-                        hintText: "CONFIRM PASSWORD",
-                        hintStyle:
-                            TextStyle(fontSize: 18, color: Colors.white54),
-                        textInputAction: TextInputAction.done,
-                        textInputType: TextInputType.visiblePassword,
-                        validator: (value) {},
-                        obscureText: true,
-                      ),
-                      SizedBox(height: 32),
-                      CustomOutlinedButton(
-                        onPressed: () {
-                          _navigateToNextPage();
-                        },
-                        text: "CREATE ACCOUNT",
-                      ),
-                      Spacer(),
-                      Center(
-                        child: Container(
-                          width: 318,
-                          margin: EdgeInsets.only(
-                            left: 11,
-                            right: 27,
-                          ),
-                          child: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text:
-                                      "By Creating An Account, You Are Agreeing To Our",
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                                TextSpan(
-                                  text: " Terms & Conditions ",
-                                  style: theme.textTheme.bodyMedium!.copyWith(
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: " And ",
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                                TextSpan(
-                                  text: " Privacy Policy!",
-                                  style: theme.textTheme.bodyMedium!.copyWith(
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          labelText: 'Add your first name',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
                         ),
+                        onChanged: (value) {
+                          // Handle the name input
+                        },
                       ),
-                    ]))));
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 90, right: 90.0),
+                    child: CustomOutlinedButton(
+                      onPressed: _navigateToNextPage,
+                      text: "CONTINUE",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 4,
+          child: Container(),
+        ),
+      ],
+    );
   }
 
   Widget _buildDOB(BuildContext context) {
-    return Center(
-      child: Column(
-        // mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            height: 80.0,
-          ),
-          Text(
-            "Add your birth date",
-            style: TextStyle(
-                fontSize: 40, fontWeight: FontWeight.w500, color: Colors.white),
-          ),
-          SizedBox(
-            height: 100.0,
-          ),
-          Text(
-            "${selectedDate.toLocal()}".split(' ')[0],
-            style: TextStyle(fontSize: 55, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 70.0, right: 70),
-            child: ElevatedButton(
-              onPressed: () => _selectDate(context),
-              child: SizedBox(
-                width: double.infinity,
-                height: 40.0,
-                child: Center(
-                  child: Text(
-                    'SELECT DATE',
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        fontFamily: 'Roboto',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                  ),
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Container(
+      height: screenHeight - 300,
+      child: Center(
+        child: Column(
+          // mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              height: 80.0,
+            ),
+            Text(
+              "Add your birth date",
+              style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white),
+            ),
+            SizedBox(
+              height: 100.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: Container(
+                child: Text(
+                  "Your Age is - ${calculateAge(selectedDate)} years",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
               ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.redAccent),
-                shape: MaterialStateProperty.all<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 70.0, right: 70),
+              child: ElevatedButton(
+                onPressed: () => _selectDate(context),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 40.0,
+                  child: Center(
+                    child: Text(
+                      'SELECT DATE',
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          fontFamily: 'Roboto',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.redAccent),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 50.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 90, right: 90.0),
-            child: CustomOutlinedButton(
-              onPressed: _navigateToNextPage,
-              text: "CONTINUE",
+            SizedBox(
+              height: 30.0,
             ),
-          ),
-          SizedBox(
-            height: 270,
-          ),
-          Text(
-            'Your age will be public.',
-            style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey.withOpacity(0.5),
-                fontWeight: FontWeight.w400),
-          ),
-        ],
+            Text(
+              'Your age will be public.',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey.withOpacity(0.5),
+                  fontWeight: FontWeight.w400),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 90, right: 90.0),
+              child: CustomOutlinedButton(
+                onPressed: _navigateToNextPage,
+                text: "CONTINUE",
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  int calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    final age = now.year - birthDate.year;
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      return age - 1;
+    }
+    return age;
+  }
+
   Widget _buildMyGender(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "You are a",
-            style: TextStyle(
-                fontSize: 40, fontWeight: FontWeight.w500, color: Colors.white),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: Gender.values.map((gender) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FilterChip(
-                  label: Text(
-                    genderToString(gender),
-                    style: TextStyle(fontSize: 30.0),
-                  ),
-                  selected: _selectedGender == gender,
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _selectedGender = selected ? gender : null;
-                    });
-                  },
-                  selectedColor: Colors.redAccent,
-                  checkmarkColor: Colors.white,
-                  backgroundColor: Colors.grey[300],
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-              );
-            }).toList(),
-          ),
-          SizedBox(
-            height: 50.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 90, right: 90.0),
-            child: CustomOutlinedButton(
-              onPressed: _navigateToNextPage,
-              text: "CONTINUE",
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Container(
+      height: screenHeight - 300,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "You are a",
+              style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white),
             ),
-          ),
-          SizedBox(
-            height: 290,
-          ),
-          Text(
-            'Your gender will be public.',
-            style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey.withOpacity(0.5),
-                fontWeight: FontWeight.w400),
-          ),
-        ],
+            SizedBox(
+              height: 40,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: Gender.values.map((gender) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilterChip(
+                    label: Text(
+                      genderToString(gender),
+                      style: TextStyle(fontSize: 30.0),
+                    ),
+                    selected: _selectedGender == gender,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedGender = selected ? gender : null;
+                      });
+                    },
+                    selectedColor: Colors.redAccent,
+                    checkmarkColor: Colors.white,
+                    backgroundColor: Colors.grey[300],
+                    labelStyle: TextStyle(color: Colors.black),
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 90, right: 90.0),
+              child: CustomOutlinedButton(
+                onPressed: _navigateToNextPage,
+                text: "CONTINUE",
+              ),
+            ),
+            SizedBox(
+              height: screenHeight - 500,
+            ),
+            Text(
+              'Your gender will be public.',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey.withOpacity(0.5),
+                  fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildShowMe(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Show me",
-            style: TextStyle(
-                fontSize: 40, fontWeight: FontWeight.w500, color: Colors.white),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: Gender.values.map((gender) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FilterChip(
-                  label: Text(
-                    genderToString(gender),
-                    style: TextStyle(fontSize: 30.0),
-                  ),
-                  selected: _selectedGender1 == gender,
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _selectedGender1 = selected ? gender : null;
-                    });
-                  },
-                  selectedColor: Colors.redAccent,
-                  checkmarkColor: Colors.white,
-                  backgroundColor: Colors.grey[300],
-                  labelStyle: TextStyle(color: Colors.black),
-                ),
-              );
-            }).toList(),
-          ),
-          SizedBox(
-            height: 50.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 90, right: 90.0),
-            child: CustomOutlinedButton(
-              onPressed: _navigateToNextPage,
-              text: "CONTINUE",
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Container(
+      height: screenHeight - 300,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Show me",
+              style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white),
             ),
-          ),
-          SizedBox(
-            height: 290,
-          ),
-          Text(
-            '',
-            style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey.withOpacity(0.5),
-                fontWeight: FontWeight.w400),
-          ),
-        ],
+            SizedBox(
+              height: 40,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: ShowGender.values.map((gender) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilterChip(
+                    label: Text(
+                      ShowGenderToString(gender),
+                      style: TextStyle(fontSize: 30.0),
+                    ),
+                    selected: _selectedGender1 == gender,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedGender1 = selected ? gender : null;
+                      });
+                    },
+                    selectedColor: Colors.redAccent,
+                    checkmarkColor: Colors.white,
+                    backgroundColor: Colors.grey[300],
+                    labelStyle: TextStyle(color: Colors.black),
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(
+              height: 50.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 90, right: 90.0),
+              child: CustomOutlinedButton(
+                onPressed: _navigateToNextPage,
+                text: "CONTINUE",
+              ),
+            ),
+            SizedBox(
+              height: screenHeight - 500,
+            ),
+            Text(
+              '',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey.withOpacity(0.5),
+                  fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Widget _buildUploadProfilePic(BuildContext context) {
-    return Container(
-        width: double.maxFinite,
-        padding: EdgeInsets.symmetric(horizontal: 27, vertical: 37),
-        child: Column(children: [
-          SizedBox(
-            height: 20,
-          ),
-          Text(
-            "Add your profile photo",
-            style: TextStyle(
-                fontSize: 35, fontWeight: FontWeight.w500, color: Colors.white),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          Container(
-              margin: EdgeInsets.symmetric(horizontal: 38),
-              padding: EdgeInsets.symmetric(horizontal: 27, vertical: 82),
-              decoration: AppDecoration.fillPrimary
-                  .copyWith(borderRadius: BorderRadiusStyle.circleBorder129),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 30),
-                    Text(
-                      " Be yourself, there's no one better  ",
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                        width: 198,
-                        margin: EdgeInsets.only(left: 2, right: 3),
-                        child: Text(
-                          ' "Upload your photo so that people can see your true-self" ',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.white54,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w300),
-                        ))
-                  ])),
-          SizedBox(height: 32),
-          CustomOutlinedButton(
-              text: "SUBMIT",
-              onPressed: _navigateToNextPage,
-              buttonTextStyle: TextStyle(color: Colors.white54, fontSize: 20),
-              margin: EdgeInsets.only(left: 35, right: 34)),
-          SizedBox(height: 29),
-          Text("SKIP", style: CustomTextStyles.bodyLargeGray200),
-          SizedBox(height: 160),
-          Text(
-            'Your Picture will be visible to the added person.',
-            style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey.withOpacity(0.5),
-                fontWeight: FontWeight.w400),
-          ),
-          Spacer(),
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Center(
-                child: Container(
-                    width: 318,
-                    margin: EdgeInsets.only(right: 16),
-                    child: RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text:
-                                  "By Creating An Account, You Are Agreeing To Our",
-                              style: theme.textTheme.bodyMedium),
-                          TextSpan(
-                              text: " Terms & Conditions ",
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                  decoration: TextDecoration.underline)),
-                          TextSpan(
-                              text: " And ", style: theme.textTheme.bodyMedium),
-                          TextSpan(
-                              text: " Privacy Policy!",
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                  decoration: TextDecoration.underline))
-                        ]),
-                        textAlign: TextAlign.center)),
-              ))
-        ]));
   }
 
   Widget _buildInterests(BuildContext context) {
@@ -674,39 +577,171 @@ class _PagesFlowState extends State<PagesFlow> {
   }
 
   Widget _buildGrindPhoto(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20, top: 50),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "Add your first Grind picture",
+            "Add Your Grind Pictures",
             style: TextStyle(
                 fontSize: 33, fontWeight: FontWeight.w500, color: Colors.white),
           ),
           SizedBox(
             height: 30,
           ),
-          Container(
-            width: double.infinity,
-            height: 600,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), // Rounded edges
-              border:
-                  Border.all(color: Colors.white, width: 2), // White outline
-            ),
-            child: Center(
-              child: Text(
-                ' Through Your Photo people can see how badly hot you look ',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(8),
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: InkWell(
+                            onTap: () {
+                              print('Plus tapped');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.redAccent,
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(8),
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: InkWell(
+                            onTap: () {
+                              print('Plus tapped');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.redAccent,
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(8),
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: InkWell(
+                            onTap: () {
+                              print('Plus tapped');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.redAccent,
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(8),
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: InkWell(
+                            onTap: () {
+                              print('Plus tapped');
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.redAccent,
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           SizedBox(
             height: 20.0,
@@ -727,13 +762,12 @@ class _PagesFlowState extends State<PagesFlow> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    Widget currentPage = _buildUserCred(context);
+    Widget currentPage = _buildUserName(context);
 
     switch (_currentPageIndex) {
       case 0:
-        currentPage = _buildUserCred(context);
+        currentPage = _buildUserName(context);
         break;
       case 1:
         currentPage = _buildDOB(context);
@@ -748,9 +782,6 @@ class _PagesFlowState extends State<PagesFlow> {
         currentPage = _buildInterests(context);
         break;
       case 5:
-        currentPage = _buildUploadProfilePic(context);
-        break;
-      case 6:
         currentPage = _buildGrindPhoto(context);
         break;
     }

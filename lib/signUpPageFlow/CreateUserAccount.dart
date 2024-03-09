@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/theme_helper.dart';
@@ -20,13 +21,18 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
   bool _showPassword = false;
   bool _isUsernameAvailable = false;
 
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  // void _showSnackbar(String message) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message),
+  //       duration: const Duration(seconds: 2),
+  //     ),
+  //   );
+  // }
+
+  void _showSnackbar(BuildContext context, String message) {
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   // void _checkUsernameAvailability(String username) async {
@@ -49,71 +55,62 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
   //   });
   // }
 
-  // void createAccount() async {
-  //   String email = _emailController.text.trim();
-  //   String password = _passwordController.text.trim();
-  //   String confirmPassword = _confirmPasswordController.text.trim();
-  //   String username = _userController.text.trim();
-  //
-  //   if (email == "" || password == "" || confirmPassword == "") {
-  //     _showSnackbar('Please enter login details');
-  //   } else if (password != confirmPassword) {
-  //     _showSnackbar('Password does not match');
-  //   } else {
-  //     bool isUsernameUnique = await isUsernameAvailable(username);
-  //     if (!isUsernameUnique) {
-  //       _showSnackbar(
-  //           'Username is not available. Please choose a different one.');
-  //       return;
-  //     }
-  //     try {
-  //       UserCredential userCredential = await FirebaseAuth.instance
-  //           .createUserWithEmailAndPassword(email: email, password: password);
-  //
-  //       // Set the display name for the user
-  //       await userCredential.user!.updateDisplayName(username);
-  //
-  //       // Reload the user to get the updated information
-  //       await userCredential.user!
-  //           .reload(); // used to reload the user information from Firebase Authentication after updating the display name
-  //
-  //       if (userCredential.user != null) {
-  //         try {
-  //           UserCredential userCredential = await FirebaseAuth.instance
-  //               .signInWithEmailAndPassword(
-  //               email: email, password: password); //logging in the user
-  //
-  //           if (userCredential.user == null) {
-  //             _showSnackbar("Error while signUp");
-  //             Navigator.push(
-  //               context,
-  //               MaterialPageRoute(builder: (context) => const SignUpPage()),
-  //             );
-  //           }
-  //         } on FirebaseAuthException catch (ex) {
-  //           _showSnackbar(ex.code.toString());
-  //         }
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => const verifyEmail()),
-  //         );
-  //       }
-  //     } on FirebaseAuthException catch (ex) {
-  //       _showSnackbar(ex.code.toString());
-  //     }
-  //   }
-  // }
+  void createAccount(BuildContext context) async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+    String username = _userController.text.trim();
 
-  // Future<bool> isUsernameAvailable(String username) async {
-  //   // Check if the username exists in the Firestore database
-  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .where('username', isEqualTo: username)
-  //       .get();
-  //
-  //   return querySnapshot
-  //       .docs.isEmpty; // If the list is empty, the username is available
-  // }
+    if (email == "" || password == "" || confirmPassword == "") {
+      _showSnackbar(context, 'Please enter login details');
+    } else if (password != confirmPassword) {
+      _showSnackbar(context, 'Password does not match');
+    } else {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+
+        // Set the display name for the user
+        await userCredential.user!.updateDisplayName(username);
+
+        // Reload the user to get the updated information
+        await userCredential.user!.reload();
+
+        // Send email verification
+        await userCredential.user!.sendEmailVerification();
+
+        // Show pop-up indicating that verification email has been sent
+        _showVerificationDialog(context, email);
+      } on FirebaseAuthException catch (ex) {
+        _showSnackbar(context, ex.code.toString());
+      }
+    }
+  }
+
+  void _showVerificationDialog(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Verification Email Sent"),
+          content: Text(
+              "A verification email has been sent to $email. Please verify your email before logging in."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                // Navigator.of(context).pop();
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => HomeScreen()), // Replace HomeScreen with your desired screen after email verification
+                // );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -141,6 +138,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomTextFormField(
+                    controller: _userController,
                     cursorColor: Colors.white,
                     hintText: "NAME",
                     hintStyle: TextStyle(fontSize: 18, color: Colors.white54),
@@ -156,6 +154,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomTextFormField(
+                        controller: _emailController,
                         cursorColor: Colors.white,
                         hintText: "EMAIL",
                         textInputType: TextInputType.emailAddress,
@@ -176,6 +175,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                   ),
                   SizedBox(height: 44),
                   CustomTextFormField(
+                    controller: _passwordController,
                     cursorColor: Colors.white,
                     hintText: "PASSWORD",
                     hintStyle: TextStyle(fontSize: 18, color: Colors.white54),
@@ -185,6 +185,7 @@ class _CreateUserAccountState extends State<CreateUserAccount> {
                   ),
                   SizedBox(height: 38),
                   CustomTextFormField(
+                    controller: _confirmPasswordController,
                     cursorColor: Colors.white,
                     hintText: "CONFIRM PASSWORD",
                     hintStyle: TextStyle(fontSize: 18, color: Colors.white54),

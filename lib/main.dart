@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mohsin_s_application4/splashScreen/splashScreen.dart';
+import 'package:mohsin_s_application4/signUpPageFlow/pagesFlow.dart';
 import 'package:mohsin_s_application4/theme/theme_helper.dart';
 
 import 'core/utils/pref_utils.dart';
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: theme,
       title: 'Grind',
-      home: SplashScreen(),
+      home: PagesFlow(),
     );
   }
 }

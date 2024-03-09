@@ -53,7 +53,7 @@ class _DateOfBirthState extends State<DateOfBirth> {
             // mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                height: 80.0,
+                height: 50.0,
               ),
               Text(
                 "Add your birth date",
@@ -113,7 +113,7 @@ class _DateOfBirthState extends State<DateOfBirth> {
                 ),
               ),
               SizedBox(
-                height: 270,
+                height: 140,
               ),
               Text(
                 'Your age will be public.',

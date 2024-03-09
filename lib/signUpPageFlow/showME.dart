@@ -4,7 +4,7 @@ import 'package:mohsin_s_application4/signUpPageFlow/myInterests.dart';
 import '../widgets/custom_outlined_button.dart';
 import 'myGender.dart';
 
-enum Gender { MEN, WOMEN, EVERYONE }
+enum ShowGender { MEN, WOMEN, EVERYONE }
 
 class ShowMe extends StatefulWidget {
   const ShowMe({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class ShowMe extends StatefulWidget {
 }
 
 class _ShowMeState extends State<ShowMe> {
-  Gender? _selectedGender1;
+  ShowGender? _selectedGender1;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class _ShowMeState extends State<ShowMe> {
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: Gender.values.map((gender) {
+              children: ShowGender.values.map((gender) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: FilterChip(
@@ -95,13 +95,13 @@ class _ShowMeState extends State<ShowMe> {
     );
   }
 
-  String genderToString(Gender gender) {
+  String genderToString(ShowGender gender) {
     switch (gender) {
-      case Gender.MEN:
+      case ShowGender.MEN:
         return 'MEN';
-      case Gender.WOMEN:
+      case ShowGender.WOMEN:
         return 'WOMEN';
-      case Gender.EVERYONE:
+      case ShowGender.EVERYONE:
         return 'EVERYONE';
     }
   }

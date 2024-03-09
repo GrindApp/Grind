@@ -22,6 +22,7 @@ class CustomTextFormField extends StatefulWidget {
     this.hintText,
     this.hintStyle,
     this.prefix,
+    this.prefixText,
     this.prefixConstraints,
     this.suffix,
     this.suffixConstraints,
@@ -63,6 +64,8 @@ class CustomTextFormField extends StatefulWidget {
   final TextStyle? hintStyle;
 
   final Widget? prefix;
+
+  final Widget? prefixText;
 
   final BoxConstraints? prefixConstraints;
 

@@ -1,23 +1,52 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+
+import '../signUpPageFlow/OTPScreen.dart';
 import '../theme/theme_helper.dart';
 import '../widgets/custom_outlined_button.dart';
-import '../widgets/custom_text_form_field.dart';
-import 'OtpPopUp.dart';
 
-class LogInWithPhone extends StatelessWidget {
+class LogInWithPhone extends StatefulWidget {
   const LogInWithPhone({Key? key}) : super(key: key);
+
+  @override
+  State<LogInWithPhone> createState() => _LogInWithPhoneState();
+}
+
+class _LogInWithPhoneState extends State<LogInWithPhone> {
+  String PhoneInput = "";
+
+  void sendOTP() async {
+    String phone = PhoneInput.trim();
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phone,
+      codeSent: (verificationId, resendToken) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => OtpScreen(
+                    verificationId: verificationId,
+                  )),
+        );
+      },
+      verificationCompleted: (credential) {},
+      verificationFailed: (ex) {
+        log(ex.code.toString());
+      },
+      codeAutoRetrievalTimeout: (verificationId) {},
+      timeout: Duration(seconds: 30),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            'LOG IN WITH MOBILE',
-            style:
-                TextStyle(color: Colors.white54, fontWeight: FontWeight.w300),
-          ),
+          backgroundColor: Color(0xFF1C1E20),
+          elevation: 0,
           iconTheme: IconThemeData(color: Colors.white54),
         ),
         body: Container(
@@ -30,25 +59,38 @@ class LogInWithPhone extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextFormField(
+              Text(
+                "My number is",
+                style: TextStyle(fontSize: 45, color: Colors.white),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              IntlPhoneField(
+                decoration: InputDecoration(
+                    labelText: "Phone Number",
+                    labelStyle: TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white))),
+                style: TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
-                hintText: "MOBILE NUMBER",
-                hintStyle: TextStyle(fontSize: 18, color: Colors.white54),
-                validator: (value) {
-                  // Your validation logic here
+                onChanged: (phone) {
+                  setState(() {
+                    PhoneInput = phone.completeNumber;
+                  });
                 },
+                initialCountryCode: 'IN',
               ),
               SizedBox(height: 38),
               CustomOutlinedButton(
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return OTPSentPopup();
-                    },
-                  );
+                  sendOTP();
                 },
-                text: "CREATE ACCOUNT",
+                text: "SEND OTP",
               ),
               Spacer(),
               Center(

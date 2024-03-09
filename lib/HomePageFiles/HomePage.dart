@@ -6,6 +6,7 @@ import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import '../AllSideBarPages/SideBar.dart';
+import '../ChatFIles/allDmsPage.dart';
 import '../core/utils/image_constant.dart';
 import '../theme/app_decoration.dart';
 import '../theme/custom_text_style.dart';
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           extendBodyBehindAppBar: false,
           drawer: NavDrawer(),
-          appBar: buildAppBar(),
+          appBar: buildAppBar(context),
           body: SingleChildScrollView(
             child: Column(
               children: [
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-PreferredSizeWidget buildAppBar() {
+PreferredSizeWidget buildAppBar(BuildContext context) {
   return AppBar(
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -126,11 +127,17 @@ PreferredSizeWidget buildAppBar() {
         padding: EdgeInsets.only(right: 10.0, top: 15.0),
         child: IconButton(
           icon: SvgPicture.asset(
-            'assets/images/img_television.svg', // Path to your SVG file
+            'assets/images/img_television.svg',
             width: 40,
             height: 40,
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(
+                builder: (_) => AllDmsPage(),
+              ),
+            );
+          },
         ),
       ),
     ],
